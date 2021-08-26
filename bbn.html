@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>jsbayes discrete bayesian belief network visualization and interaction example</title>
+    <style>
+      svg { border: 1px solid black; }
+      svg g rect.node-shape { border-radius: 5px !important; fill:#ffecb3 !important; cursor: move; }
+      svg g text.node-name { font-weight: 800 !important }
+      svg g rect.node-bar { fill: green !important }
+      svg g text.node-value { fill:rgb(0,0,0) !important; font-size: 15px; cursor: pointer; }
+      svg line.edge-line { stroke:rgb(0,0,0) !important }
+      svg path.edge-head { fill:rgb(0,0,0) !important }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
+    <script src="https://cdn.jsdelivr.net/lodash/4.11.1/lodash.js"></script>
+    <script src="https://rawgithub.com/cpettitt/graphlib/master/dist/graphlib.core.js"></script>
+    <script src="https://rawgithub.com/cpettitt/dagre/master/dist/dagre.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://rawgithub.com/vangj/jsbayes/master/jsbayes.js"></script>
+    <script src="https://rawgithub.com/vangj/jsbayes-viz/master/jsbayes-viz.js"></script>
+    <script>
+      function getGraph() {
+        var graph = jsbayes.newGraph();
+        graph.saveSamples = true;
+            		alert('test');
+        var n1 = graph.addNode('Insurance_status', ['Cancellation','Normal']);
+
+        var n2 = graph.addNode('IN_num', ['1 INSUERD', '2 INSUERD']);
+
+        var n3 = graph.addNode('Marital_status', ['Married', 'Single']);
+
+        var n4 = graph.addNode('Relation', ['Father', 'GMother', 'Mother','Spouse']);
+          
+        var n5 = graph.addNode('Insured', ['OCC', 'Student','housewife','underage']);
+
+        var n6 = graph.addNode('Occupation_Insured', ['HighP', 'Lowp', 'MidP']);
+
+        var n7 = graph.addNode('Location', ['Level1', 'Level2', 'Level3','Level4','OutL']);
+
+        var n8 = graph.addNode('INT_CAPM', ['Plan68.2', 'Plan68.2.3']);
+        var n9 = graph.addNode('Payment_method', ['Annual installments', 'Monthly installments']);
+        var n10 = graph.addNode('Sex', ['FeMale', 'Male']);
+        var n11 = graph.addNode('Sex_Insured', ['Female', 'Male']);   
+  
+        n2.addParent(n1);
+        n7.addParent(n1);
+        n7.addParent(n6);
+        n6.addParent(n1);
+        n8.addParent(n1);
+        n9.addParent(n6);
+        n9.addParent(n8);
+        n10.addParent(n2);
+        n3.addParent(n10);
+        n4.addParent(n10);
+        n4.addParent(n3);
+        n11.addParent(n3);
+        n5.addParent(n4);
+        n1.setCpt([ 0.071809,  0.928191 ]); 
+
+        n2.setCpt([
+          [ 0.050532,   0.021277 ],
+          [ 0.755319,   0.172872 ]
+        ]);    
+
+        n3.setCpt([
+          [ 0.218085,  0.018617 ],
+          [ 0.726064,  0.037234 ]
+        ]);
+		
+        n4.setCpt([
+		  [ 0.103723,  0.00266,  0.055851,  0.055851],
+		  [ 0.436170,  0.00000,  0.095745,  0.194149],
+		  [ 0.010638,  0.00000,  0.000000,  0.007979],
+		  [ 0.015957,  0.00000,  0.002660,  0.018617]
+        ]);
+
+        n5.setCpt([
+          [ 0.000000,  0.007979,   0.002660,  0.555851 ],
+          [ 0.000000,  0.000000,   0.000000,  0.002660 ], 
+          [ 0.002660,  0.002660,   0.000000,  0.148936 ],
+          [ 0.013298,  0.000000,   0.263298,  0.000000 ]
+        ]);
+
+        n6.setCpt([
+          [ 0.021277,  0.002660,  0.047872 ],
+          [ 0.188830,  0.117021,  0.622340 ]
+        ]);
+
+        n7.setCpt([
+          [  0.021277,  0.000000,  0.000000,  0.000000,  0.000000 ],
+          [ 0.000000,  0.000000,  0.002660,  0.000000,  0.000000], 
+          [ 0.002660,  0.042553,  0.000000,  0.002660,  0.000000 ],
+          [ 0.148936,  0.029255,  0.002660,  0.000000,  0.007979 ],
+		  [ 0.000000,  0.045213,  0.005319,  0.058511,  0.007979 ],
+		  [ 0.026596,  0.414894,  0.026596,  0.087766,  0.066489]
+        ]);
+
+        n8.setCpt([
+          [ 0.071809,     0.00000 ],
+          [ 0.925532,     0.00266 ]
+        ]);	
+                         		
+        n9.setCpt([
+          [ 0.210106,  0.00000 ],
+          [ 0.117021,  0.00000 ],
+		  [ 0.667553,  0.00266 ],
+		  [ 0.000000,  0.00000 ],
+		  [ 0.002660,  0.00000 ],
+          [ 0.000000, 0.00000 ] 
+        ]);
+
+        n10.setCpt([
+          [ 0.215426,  0.590426 ],
+          [ 0.021277,  0.172872 ]
+        ]); 
+	
+        n11.setCpt([
+          [ 0.707447,  0.236702 ],
+          [ 0.031915,  0.023936 ]
+        ]);  		
+        graph.sample(20000);
+        
+        var g = jsbayesviz.fromGraph(graph);
+        return g;
+      }
+      
+      $(document).ready(function() {
+        (function(window) { 
+          var graph = getGraph();
+          jsbayesviz.draw({
+            id: '#bbn',
+            width: 800,
+            height: 800,
+            graph: graph,
+            samples: 15000
+          });
+          
+        })(window);
+      });
+    </script>
+  </head>
+
+  <body>
+    <svg id="bbn">
+    </svg>
+
+  </body>
+
+</html>
